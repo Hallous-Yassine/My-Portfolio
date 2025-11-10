@@ -1,11 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import SnakeGame from "@/components/SnakeGame";
 
+interface HomeData {
+  heroSection: {
+    greeting: string;
+    name: string;
+    title: string;
+    githubLink: string;
+  };
+  gameSection: {
+    continueButton: string;
+  };
+}
+
 const Home = () => {
   const [gameCompleted, setGameCompleted] = useState(false);
+  const [homeData, setHomeData] = useState<HomeData | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('/data/home.json')
+      .then(response => response.json())
+      .then(data => {
+        setHomeData(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error loading home data:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-[calc(100vh-120px)] flex items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!homeData) {
+    return (
+      <div className="min-h-[calc(100vh-120px)] flex items-center justify-center">
+        <div className="text-red-500">Error loading home data</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-120px)] flex items-center justify-center relative overflow-hidden">
@@ -20,12 +63,12 @@ const Home = () => {
             <div className="relative">
               <div className="absolute -inset-4 bg-glow-cyan opacity-20 blur-2xl" />
               <div className="relative">
-                <p className="text-muted-foreground font-mono text-sm mb-2">Hi all. I am</p>
+                <p className="text-muted-foreground font-mono text-sm mb-2">{homeData.heroSection.greeting}</p>
                 <h1 className="text-5xl lg:text-6xl font-bold mb-4 animate-fade-in">
-                  Yassine Hallous
+                  {homeData.heroSection.name}
                 </h1>
                 <p className="text-primary text-xl font-mono">
-                  {">"} Computer Engineering Student
+                  {">"} {homeData.heroSection.title}
                 </p>
               </div>
             </div>
@@ -38,12 +81,12 @@ const Home = () => {
                 <span className="text-code-blue">githubLink</span>{" "}
                 <span className="text-foreground">=</span>{" "}
                 <a
-                  href="https://github.com/Hallous-Yassine"
+                  href={homeData.heroSection.githubLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-code-orange hover:underline interactive-element inline-block"
                 >
-                  "https://github.com/Hallous-Yassine"
+                  "{homeData.heroSection.githubLink}"
                 </a>
               </p>
             </div>
@@ -64,7 +107,7 @@ const Home = () => {
                 size="lg"
                 className="font-mono glow-cyan animate-fade-in hover:scale-105 transition-transform duration-300"
               >
-                {"> continue_to_portfolio"}
+                {homeData.gameSection.continueButton}
               </Button>
             )}
           </div>

@@ -1,8 +1,25 @@
 import { ChevronDown, ChevronRight, Mail, Phone, Linkedin, Github } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { aboutContent } from "./AboutContent";
 
 type ContentSection = "bio" | "skills" | "education" | "experience" | "certifications" | "leadership";
+
+interface AboutData {
+  contactInfo: {
+    email: string;
+    phone: string;
+  };
+  socialLinks: {
+    linkedin: {
+      url: string;
+      label: string;
+    };
+    github: {
+      url: string;
+      label: string;
+    };
+  };
+}
 
 const AboutNew = () => {
   const [openSections, setOpenSections] = useState({
@@ -12,10 +29,25 @@ const AboutNew = () => {
   
   const [activeContent, setActiveContent] = useState<ContentSection>("bio");
   const [breadcrumb, setBreadcrumb] = useState("personal-info > bio");
+  const [aboutData, setAboutData] = useState<AboutData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
+
+  useEffect(() => {
+    fetch('/data/about.json')
+      .then(response => response.json())
+      .then(data => {
+        setAboutData(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error loading about data:', error);
+        setLoading(false);
+      });
+  }, []);
 
   const handleContentChange = (content: ContentSection, path: string) => {
     setActiveContent(content);
@@ -25,6 +57,22 @@ const AboutNew = () => {
   const getContent = () => {
     return aboutContent[activeContent];
   };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[calc(100vh-120px)] items-center justify-center">
+        <div className="text-muted-foreground">Loading about information...</div>
+      </div>
+    );
+  }
+
+  if (!aboutData) {
+    return (
+      <div className="flex min-h-[calc(100vh-120px)] items-center justify-center">
+        <div className="text-red-500">Error loading about information</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[calc(100vh-120px)]">
@@ -125,15 +173,15 @@ const AboutNew = () => {
             {openSections.contacts && (
               <div className="ml-6 mt-2 space-y-2">
                 <a
-                  href="mailto:yassine_hallous@ieee.org"
+                  href={`mailto:${aboutData.contactInfo.email}`}
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Mail className="w-4 h-4" strokeWidth={1.5} />
-                  <span className="text-xs">yassine_hallous@ieee.org</span>
+                  <span className="text-xs">{aboutData.contactInfo.email}</span>
                 </a>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Phone className="w-4 h-4" strokeWidth={1.5} />
-                  <span className="text-xs">+216-98477182</span>
+                  <span className="text-xs">{aboutData.contactInfo.phone}</span>
                 </div>
               </div>
             )}
@@ -144,22 +192,22 @@ const AboutNew = () => {
             <p className="text-xs text-muted-foreground font-mono mb-2">find-me-also-in</p>
             <div className="space-y-2">
               <a
-                href="https://linkedin.com/in/yassine-hallous"
+                href={aboutData.socialLinks.linkedin.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors interactive-element"
               >
                 <Linkedin className="w-4 h-4" strokeWidth={1.5} />
-                <span className="text-xs">LinkedIn</span>
+                <span className="text-xs">{aboutData.socialLinks.linkedin.label}</span>
               </a>
               <a
-                href="https://github.com/Hallous-Yassine"
+                href={aboutData.socialLinks.github.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors interactive-element"
               >
                 <Github className="w-4 h-4" strokeWidth={1.5} />
-                <span className="text-xs">GitHub</span>
+                <span className="text-xs">{aboutData.socialLinks.github.label}</span>
               </a>
             </div>
           </div>

@@ -1,9 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+
+interface ContactData {
+  contactInfo: {
+    email: string;
+    phone: string;
+    location: string;
+  };
+  socialLinks: {
+    name: string;
+    url: string;
+    icon: string;
+  }[];
+  formLabels: {
+    name: string;
+    email: string;
+    message: string;
+    submitButton: string;
+  };
+  formPlaceholder: string;
+  codePreview: {
+    title: string;
+    defaultName: string;
+  };
+}
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +35,22 @@ const Contact = () => {
     email: "",
     message: "",
   });
+  const [contactData, setContactData] = useState<ContactData | null>(null);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  useEffect(() => {
+    fetch('/data/contact.json')
+      .then(response => response.json())
+      .then(data => {
+        setContactData(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error loading contact data:', error);
+        setLoading(false);
+      });
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +61,22 @@ const Contact = () => {
     setFormData({ name: "", email: "", message: "" });
   };
 
+  if (loading) {
+    return (
+      <div className="flex min-h-[calc(100vh-120px)] items-center justify-center">
+        <div className="text-muted-foreground">Loading contact information...</div>
+      </div>
+    );
+  }
+
+  if (!contactData) {
+    return (
+      <div className="flex min-h-[calc(100vh-120px)] items-center justify-center">
+        <div className="text-red-500">Error loading contact information</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-[calc(100vh-120px)]">
       {/* Sidebar */}
@@ -30,19 +85,19 @@ const Contact = () => {
           <h3 className="text-sm font-mono text-foreground mb-3">contacts</h3>
           <div className="space-y-2">
             <a
-              href="mailto:yassine_hallous@ieee.org"
+              href={`mailto:${contactData.contactInfo.email}`}
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               <Mail className="w-4 h-4" />
-              <span className="text-xs">yassine_hallous@ieee.org</span>
+              <span className="text-xs">{contactData.contactInfo.email}</span>
             </a>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Phone className="w-4 h-4" />
-              <span className="text-xs">+216-98477182</span>
+              <span className="text-xs">{contactData.contactInfo.phone}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="w-4 h-4" />
-              <span className="text-xs">Tunis, Sousse - Tunisia</span>
+              <span className="text-xs">{contactData.contactInfo.location}</span>
             </div>
           </div>
         </div>
@@ -50,25 +105,22 @@ const Contact = () => {
         <div>
           <h3 className="text-sm font-mono text-foreground mb-3">find-me-also-in</h3>
           <div className="space-y-2">
-            <a
-              href="https://www.youtube.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-              </svg>
-              <span className="text-xs">YouTube</span>
-            </a>
-            <a
-              href="https://dev.to"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <span className="text-xs">📝 dev.to</span>
-            </a>
+            {contactData.socialLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                {link.name === "YouTube" ? (
+                  <div dangerouslySetInnerHTML={{ __html: link.icon }} />
+                ) : (
+                  <span className="text-xs">{link.icon}</span>
+                )}
+                <span className="text-xs">{link.name}</span>
+              </a>
+            ))}
           </div>
         </div>
       </aside>
@@ -81,7 +133,7 @@ const Contact = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-mono text-muted-foreground mb-2">
-                  _name:
+                  {contactData.formLabels.name}
                 </label>
                 <Input
                   id="name"
@@ -94,7 +146,7 @@ const Contact = () => {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-mono text-muted-foreground mb-2">
-                  _email:
+                  {contactData.formLabels.email}
                 </label>
                 <Input
                   id="email"
@@ -108,20 +160,20 @@ const Contact = () => {
 
               <div>
                 <label htmlFor="message" className="block text-sm font-mono text-muted-foreground mb-2">
-                  _message:
+                  {contactData.formLabels.message}
                 </label>
                 <Textarea
                   id="message"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   className="font-mono min-h-[150px] resize-none"
-                  placeholder="your message here ..."
+                  placeholder={contactData.formPlaceholder}
                   required
                 />
               </div>
 
               <Button type="submit" className="font-mono">
-                submit-message
+                {contactData.formLabels.submitButton}
               </Button>
             </form>
           </div>
@@ -130,7 +182,7 @@ const Contact = () => {
         {/* Code Preview Section */}
         <div className="w-96 border-l border-border p-6 bg-accent/50">
           <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border">
-            <span className="text-xs font-mono text-muted-foreground">code-preview</span>
+            <span className="text-xs font-mono text-muted-foreground">{contactData.codePreview.title}</span>
             <button className="ml-auto text-muted-foreground hover:text-foreground">–</button>
           </div>
           
@@ -138,7 +190,7 @@ const Contact = () => {
             <pre className="text-code-purple">const <span className="text-code-blue">button</span> = <span className="text-foreground">document</span>.<span className="text-code-yellow">querySelector</span>(<span className="text-code-orange">'#sendBtn'</span>);</pre>
             <pre></pre>
             <pre className="text-code-purple">const <span className="text-code-blue">message</span> = {"{"}</pre>
-            <pre className="ml-4 text-code-blue">name: <span className="text-code-orange">"{formData.name || 'Jonathan Davis'}"</span>,</pre>
+            <pre className="text-code-blue">name: <span className="text-code-orange">"{formData.name || contactData.codePreview.defaultName}"</span>,</pre>
             <pre className="ml-4 text-code-blue">email: <span className="text-code-orange">"{formData.email || ''}"</span>,</pre>
             <pre className="ml-4 text-code-blue">message: <span className="text-code-orange">"{formData.message || ''}"</span></pre>
             <pre>{"}"}</pre>

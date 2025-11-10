@@ -1,148 +1,62 @@
-import { useState } from "react";
-import { Heart, MessageCircle, Share2, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from 'react';
+import { Heart, MessageCircle, Share2, X, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-interface Post {
-  id: number;
+interface GalleryPost {
+  id: string;
   image: string;
   title: string;
+  caption: string;
   location: string;
   date: string;
-  caption: string;
-  hashtags: string[];
+  year: number;
+  category: string;
   likes: number;
   comments: number;
   shares: number;
-  year: number;
-  category: string;
+  hashtags: string[];
 }
 
-const Gallery = () => {
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [filter, setFilter] = useState<"all" | "2025" | "2024" | "2023">("all");
-  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+interface GalleryData {
+  posts: GalleryPost[];
+}
 
-  const posts: Post[] = [
-    {
-      id: 1,
-      image: "/placeholder.svg",
-      title: "🏆 1st Place - IAS TAM Technical Challenge",
-      location: "Tunis, Tunisia",
-      date: "October 2025",
-      caption: "First place at IAS TAM Technical Challenge! Our startup Defensys won with an AI-powered security platform that provides proactive application protection. Proud of what we built in 48 hours!",
-      hashtags: ["AI", "Security", "Innovation", "FirstPlace", "Hackathon"],
-      likes: 127,
-      comments: 23,
-      shares: 12,
-      year: 2025,
-      category: "Awards"
-    },
-    {
-      id: 2,
-      image: "/placeholder.svg",
-      title: "🎖️ Best Android Project - GDG TechDays",
-      location: "Sousse, Tunisia",
-      date: "April 2025",
-      caption: "Best Android Project at GDG TechDays! Incredible learning experience focusing on Kotlin development and modern Android architecture. Thanks to GDG Sousse for this amazing bootcamp!",
-      hashtags: ["Android", "Kotlin", "GDG", "TechDays"],
-      likes: 94,
-      comments: 15,
-      shares: 8,
-      year: 2025,
-      category: "Awards"
-    },
-    {
-      id: 3,
-      image: "/placeholder.svg",
-      title: "🥉 RedRoom Hackathon",
-      location: "Tunisia",
-      date: "March 2025",
-      caption: "3rd place overall and 2nd in CTF at RedRoom Hackathon by Securinets! 26 hours of intensive cybersecurity challenges. Sleep is overrated when you're cracking codes! 💪",
-      hashtags: ["Cybersecurity", "CTF", "Hackathon", "RedRoom"],
-      likes: 156,
-      comments: 31,
-      shares: 19,
-      year: 2025,
-      category: "Hackathons"
-    },
-    {
-      id: 4,
-      image: "/placeholder.svg",
-      title: "🎯 Sight Day Congress",
-      location: "ISITCOM, Tunisia",
-      date: "2024",
-      caption: "Successfully organized Sight Day Congress as part of IEEE ESSTHS! Bringing together students and industry professionals to discuss technology's impact on society.",
-      hashtags: ["IEEE", "Leadership", "TechForGood", "SightDay"],
-      likes: 203,
-      comments: 42,
-      shares: 25,
-      year: 2024,
-      category: "IEEE Events"
-    },
-    {
-      id: 5,
-      image: "/placeholder.svg",
-      title: "🤖 Robots League 2.0",
-      location: "ISITCOM, Tunisia",
-      date: "2024",
-      caption: "Coordinating Robots League 2.0 was an incredible experience! Watching students compete with their autonomous robots and seeing their passion for embedded systems.",
-      hashtags: ["Robotics", "IEEE", "Embedded", "RobotsLeague"],
-      likes: 178,
-      comments: 37,
-      shares: 21,
-      year: 2024,
-      category: "IEEE Events"
-    },
-    {
-      id: 6,
-      image: "/placeholder.svg",
-      title: "🌟 TSYP 11 Congress",
-      location: "Tunisia",
-      date: "2024",
-      caption: "Part of the TSYP 11 Organizing Committee! Working with talented young professionals across regions to create impactful technical programs.",
-      hashtags: ["IEEE", "TSYP", "Leadership", "Networking"],
-      likes: 142,
-      comments: 28,
-      shares: 16,
-      year: 2024,
-      category: "IEEE Events"
-    },
-    {
-      id: 7,
-      image: "/placeholder.svg",
-      title: "💻 IEEEXtreme 18.0",
-      location: "Online",
-      date: "October 2024",
-      caption: "24 hours of non-stop competitive programming at IEEEXtreme 18.0! Solving algorithms, debugging at 3 AM, and pushing our limits.",
-      hashtags: ["Programming", "Competition", "IEEE", "IEEEXtreme"],
-      likes: 189,
-      comments: 34,
-      shares: 18,
-      year: 2024,
-      category: "Competitions"
-    },
-    {
-      id: 8,
-      image: "/placeholder.svg",
-      title: "📚 IEEE Technical Bootcamp",
-      location: "ISITCOM, Tunisia",
-      date: "2024",
-      caption: "Leading technical bootcamp session on IoT and embedded systems for IEEE members. Sharing knowledge and inspiring the next generation of engineers!",
-      hashtags: ["Teaching", "IoT", "IEEE", "Bootcamp"],
-      likes: 165,
-      comments: 29,
-      shares: 14,
-      year: 2024,
-      category: "Bootcamps"
-    }
-  ];
+interface ContentSection {
+  title: string;
+  content: string;
+}
 
-  const filteredPosts = posts.filter(post => {
-    if (filter === "all") return true;
-    return post.year.toString() === filter;
+const Gallery: React.FC = () => {
+  const [galleryData, setGalleryData] = useState<GalleryData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedPost, setSelectedPost] = useState<GalleryPost | null>(null);
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [openSections, setOpenSections] = useState({
+    timeline: true,
+    categories: false
   });
 
-  const handleLike = (postId: number) => {
+  useEffect(() => {
+    fetch('/data/gallery.json')
+      .then(response => response.json())
+      .then(data => {
+        setGalleryData(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error loading gallery data:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  const posts = galleryData?.posts || [];
+
+  const filteredPosts = selectedYear
+    ? posts.filter(post => post.year === selectedYear)
+    : posts;
+
+  const handleLike = (postId: string) => {
     setLikedPosts(prev => {
       const newSet = new Set(prev);
       if (newSet.has(postId)) {
@@ -154,98 +68,185 @@ const Gallery = () => {
     });
   };
 
-  const getDisplayLikes = (post: Post) => {
-    const isLiked = likedPosts.has(post.id);
-    return isLiked ? post.likes + 1 : post.likes;
+  const getDisplayLikes = (post: GalleryPost) => {
+    const baseLikes = post.likes;
+    const userLike = likedPosts.has(post.id) ? 1 : 0;
+    return baseLikes + userLike;
   };
 
-  return (
-    <div className="min-h-[calc(100vh-120px)] p-8">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
-        <h1 className="text-3xl font-bold mb-2 font-mono">// My Journey in Tech</h1>
-        <p className="text-muted-foreground font-mono text-sm mb-6">
-          // Events • Awards • Moments • Memories
-        </p>
+  const toggleSection = (section: keyof typeof openSections) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
-        {/* Filters */}
-        <div className="flex gap-4">
-          <Button
-            variant={filter === "all" ? "default" : "outline"}
-            onClick={() => setFilter("all")}
-            className="font-mono"
-          >
-            All
-          </Button>
-          <Button
-            variant={filter === "2025" ? "default" : "outline"}
-            onClick={() => setFilter("2025")}
-            className="font-mono"
-          >
-            2025
-          </Button>
-          <Button
-            variant={filter === "2024" ? "default" : "outline"}
-            onClick={() => setFilter("2024")}
-            className="font-mono"
-          >
-            2024
-          </Button>
-          <Button
-            variant={filter === "2023" ? "default" : "outline"}
-            onClick={() => setFilter("2023")}
-            className="font-mono"
-          >
-            2023
-          </Button>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex">
+        <aside className="w-80 border-r border-border bg-card/50 backdrop-blur-sm">
+          <div className="p-6 border-b border-border">
+            <h2 className="text-lg font-semibold font-mono">Filters</h2>
+          </div>
+          <div className="p-6">
+            <p className="text-muted-foreground font-mono text-sm">Loading...</p>
+          </div>
+        </aside>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground font-mono">Loading gallery data...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Grid */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredPosts.map((post) => (
-          <div
-            key={post.id}
-            className="bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-all duration-300 cursor-pointer interactive-element glow-cyan"
-            onClick={() => setSelectedPost(post)}
-          >
-            {/* Image */}
-            <div className="aspect-square bg-accent relative overflow-hidden">
-              <img
-                src={post.image}
-                alt={post.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
-            </div>
+  return (
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar */}
+      <aside className="w-80 border-r border-border bg-card/50 backdrop-blur-sm">
+        {/* Sidebar Header */}
+        <div className="p-6 border-b border-border">
+          <h2 className="text-lg font-semibold font-mono">Filters</h2>
+        </div>
 
-            {/* Stats */}
-            <div className="border-t border-border p-3 flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-1">
-                <Heart className="w-4 h-4" strokeWidth={1.5} />
-                <span>{getDisplayLikes(post)}</span>
+        {/* Sidebar Content */}
+        <div className="p-6 space-y-6">
+          {/* Timeline Section */}
+          <div>
+            <button
+              onClick={() => toggleSection('timeline')}
+              className="flex items-center gap-2 w-full text-left font-mono text-sm hover:text-primary transition-colors"
+            >
+              <ChevronRight className={`w-4 h-4 transition-transform ${openSections.timeline ? 'rotate-90' : ''}`} />
+              timeline
+            </button>
+            {openSections.timeline && (
+              <div className="ml-6 mt-2 space-y-2 text-sm font-mono">
+                {Array.from(new Set(posts.map(post => post.year))).sort((a, b) => b - a).map(year => (
+                  <button
+                    key={year}
+                    className={`flex items-center gap-2 w-full text-left hover:text-primary transition-colors ${
+                      selectedYear === year ? 'text-primary' : 'text-muted-foreground'
+                    }`}
+                    onClick={() => setSelectedYear(selectedYear === year ? null : year)}
+                  >
+                    <ChevronRight className="w-3 h-3" />
+                    {year}
+                  </button>
+                ))}
               </div>
-              <div className="flex items-center gap-1">
-                <MessageCircle className="w-4 h-4" strokeWidth={1.5} />
-                <span>{post.comments}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Share2 className="w-4 h-4" strokeWidth={1.5} />
-                <span>{post.shares}</span>
-              </div>
-            </div>
-
-            {/* Info */}
-            <div className="p-4">
-              <p className="font-mono text-sm font-semibold mb-1">yassine_hallous</p>
-              <p className="text-xs text-muted-foreground mb-2">
-                📍 {post.location} • 📅 {post.date}
-              </p>
-              <p className="text-sm font-semibold mb-2">{post.title}</p>
-              <p className="text-sm text-muted-foreground line-clamp-2">{post.caption}</p>
-            </div>
+            )}
           </div>
-        ))}
+
+          {/* Categories Section */}
+          <div>
+            <button
+              onClick={() => toggleSection('categories')}
+              className="flex items-center gap-2 w-full text-left font-mono text-sm hover:text-primary transition-colors"
+            >
+              <ChevronRight className={`w-4 h-4 transition-transform ${openSections.categories ? 'rotate-90' : ''}`} />
+              categories
+            </button>
+            {openSections.categories && (
+              <div className="ml-6 mt-2 space-y-2 text-sm font-mono">
+                {Array.from(new Set(posts.map(post => post.category))).map(category => (
+                  <button
+                    key={category}
+                    className="flex items-center gap-2 w-full text-left hover:text-primary transition-colors text-muted-foreground"
+                    onClick={() => {
+                      // Filter by category logic could be added here
+                      console.log(`Filter by ${category}`);
+                    }}
+                  >
+                    <ChevronRight className="w-3 h-3" />
+                    {category}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Tab Header */}
+        <div className="border-b border-border px-6 py-2 flex items-center gap-2">
+          <span className="text-sm font-mono text-foreground">gallery.tsx</span>
+          <button className="ml-auto text-muted-foreground hover:text-foreground">×</button>
+        </div>
+
+        {/* Content */}
+        <div className="p-8">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2 font-mono">// My Journey in Tech</h1>
+            <p className="text-muted-foreground font-mono text-sm mb-6">
+              // Events • Awards • Moments • Memories
+            </p>
+          </div>
+
+          {/* Results Counter */}
+          <div className="mb-6">
+            <p className="text-xs text-muted-foreground font-mono">
+              Showing {filteredPosts.length} of {posts.length} posts
+            </p>
+          </div>
+
+          {/* Grid or Empty State */}
+          {filteredPosts.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {filteredPosts.map((post) => (
+                <div
+                  key={post.id}
+                  className="bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-all duration-300 cursor-pointer interactive-element glow-cyan"
+                  onClick={() => setSelectedPost(post)}
+                >
+                  {/* Image */}
+                  <div className="aspect-square bg-accent relative overflow-hidden">
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
+                  </div>
+
+                  {/* Stats */}
+                  <div className="border-t border-border p-3 flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-1">
+                      <Heart className="w-4 h-4" strokeWidth={1.5} />
+                      <span>{getDisplayLikes(post)}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MessageCircle className="w-4 h-4" strokeWidth={1.5} />
+                      <span>{post.comments}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Share2 className="w-4 h-4" strokeWidth={1.5} />
+                      <span>{post.shares}</span>
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-4">
+                    <p className="font-mono text-sm font-semibold mb-1">yassine_hallous</p>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      📍 {post.location} • 📅 {post.date}
+                    </p>
+                    <p className="text-sm font-semibold mb-2">{post.title}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{post.caption}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-64">
+              <p className="text-muted-foreground font-mono">
+                No posts match the selected filters
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal */}

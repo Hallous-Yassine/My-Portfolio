@@ -1,0 +1,11 @@
+{
+  "heroSection": {
+    "greeting": "Hi all. I am",
+    "name": "Yassine Hallous",
+    "title": "Computer Engineering Student",
+    "githubLink": "https://github.com/Hallous-Yassine"
+  },
+  "gameSection": {
+    "continueButton": "> continue_to_portfolio"
+  }
+}

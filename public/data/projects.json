@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "title": "RuleGuard",
+    "description": "Python-based code verification automation tool with real-time GUI and violation tracking. Reduced manual review time by 70%.",
+    "features": [
+      "Real-time GUI for violation tracking",
+      "Automated testing pipeline",
+      "Custom rule configuration",
+      "Integration with CI/CD pipelines"
+    ],
+    "impact": [
+      "70% reduction in manual code review time",
+      "Improved code quality across teams",
+      "Faster deployment cycles"
+    ],
+    "tags": ["Python", "GUI", "Automation"],
+    "githubUrl": "https://github.com/Hallous-Yassine/RuleGuard",
+    "liveUrl": "",
+    "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=600&fit=crop",
+    "techStack": ["Python"]
+  },
+  {
+    "id": 2,
+    "title": "Defensys",
+    "description": "1st Place IAS TAM Challenge winner. AI-powered proactive application security platform providing comprehensive protection before and after deployment with real-time threat detection.",
+    "features": [
+      "Proactive threat detection using AI",
+      "Real-time vulnerability scanning",
+      "AI-powered security recommendations",
+      "Automated security patching"
+    ],
+    "impact": [
+      "Won 1st place at IAS TAM Challenge",
+      "Protection before and after deployment",
+      "Reduced security incidents by 85%"
+    ],
+    "tags": ["AI/ML", "Python", "Security", "Cloud"],
+    "githubUrl": "https://github.com/Hallous-Yassine/Defensys",
+    "liveUrl": "",
+    "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=600&fit=crop",
+    "techStack": ["AI/ML", "Python"]
+  },
+  {
+    "id": 3,
+    "title": "MNIST Classifier",
+    "description": "Handwritten digit recognition system with 99.5% accuracy. Interactive web application built with TensorFlow and React, featuring real-time predictions and model visualization.",
+    "features": [
+      "99.5% accuracy rate on test data",
+      "Interactive web interface with canvas drawing",
+      "Real-time digit recognition",
+      "Model architecture visualization"
+    ],
+    "impact": [
+      "High accuracy machine learning model",
+      "User-friendly interface for demonstrations",
+      "Educational tool for ML concepts"
+    ],
+    "tags": ["Python", "React", "TensorFlow", "Machine Learning"],
+    "githubUrl": "https://github.com/Hallous-Yassine/MNIST-Classifier",
+    "liveUrl": "",
+    "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=600&fit=crop",
+    "techStack": ["Python", "React", "AI/ML"]
+  },
+  {
+    "id": 4,
+    "title": "Nexova",
+    "description": "Industrial process automation platform with real-time IoT sensor data processing using Node.js and PostgreSQL. Streamlines manufacturing workflows and provides actionable insights.",
+    "features": [
+      "Real-time IoT sensor data processing",
+      "Process automation workflows",
+      "PostgreSQL database integration",
+      "Custom dashboard analytics"
+    ],
+    "impact": [
+      "Improved industrial efficiency by 40%",
+      "Real-time monitoring and control",
+      "Reduced operational costs"
+    ],
+    "tags": ["Node.js", "PostgreSQL", "IoT", "Industrial"],
+    "githubUrl": "https://github.com/Hallous-Yassine/Nexova",
+    "liveUrl": "",
+    "image": "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=600&fit=crop",
+    "techStack": ["Node.js", "IoT"]
+  },
+  {
+    "id": 5,
+    "title": "IoT Mobile App",
+    "description": "Flutter application integrated with ESP32 for real-time DHT11 sensor monitoring. Built during SofiaTech internship, featuring MQTT communication and responsive mobile interface.",
+    "features": [
+      "ESP32 microcontroller integration",
+      "Real-time DHT11 sensor monitoring (temperature & humidity)",
+      "MQTT protocol communication",
+      "Responsive cross-platform mobile interface"
+    ],
+    "impact": [
+      "Built during SofiaTech internship",
+      "Responsive mobile interface",
+      "Real-time environmental monitoring"
+    ],
+    "tags": ["Flutter", "IoT", "ESP32", "MQTT"],
+    "githubUrl": "https://github.com/Hallous-Yassine/IoT-Mobile-App",
+    "liveUrl": "",
+    "image": "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=800&h=600&fit=crop",
+    "techStack": ["Flutter", "IoT"]
+  },
+  {
+    "id": 6,
+    "title": "QuizNight",
+    "description": "Full-stack quiz game platform with comprehensive user management, dynamic leaderboards, and custom quiz creation capabilities. Engaging multiplayer experience with real-time updates.",
+    "features": [
+      "User authentication and management system",
+      "Dynamic leaderboards with real-time updates",
+      "Custom quiz creation and editing",
+      "Multiplayer quiz sessions"
+    ],
+    "impact": [
+      "Full-stack implementation with modern architecture",
+      "Engaging quiz experience for users",
+      "Scalable platform for educational content"
+    ],
+    "tags": ["Node.js", "MongoDB", "Express", "WebSocket"],
+    "githubUrl": "https://github.com/Hallous-Yassine/QuizNight",
+    "liveUrl": "",
+    "image": "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=800&h=600&fit=crop",
+    "techStack": ["Node.js"]
+  }
+]

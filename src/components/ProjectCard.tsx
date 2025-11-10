@@ -2,114 +2,156 @@ import { useState } from "react";
 import { Github, ExternalLink } from "lucide-react";
 
 interface ProjectCardProps {
-  name: string;
-  subtitle: string;
+  title: string;
   description: string;
-  tech: string[];
-  github: string;
-  features?: string[];
-  impact?: string[];
+  features: string[];
+  impact: string[];
+  tags: string[];
+  githubUrl?: string;
+  liveUrl?: string;
+  image: string;
 }
 
-const ProjectCard = ({ name, subtitle, description, tech, github, features, impact }: ProjectCardProps) => {
+const ProjectCard = ({
+  title,
+  description,
+  features,
+  impact,
+  tags,
+  githubUrl,
+  liveUrl,
+  image,
+}: ProjectCardProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
     <div
-      className="project-card h-[400px] cursor-pointer perspective-1000"
+      className={`flashcard ${isFlipped ? "flipped" : ""}`}
       onClick={() => setIsFlipped(!isFlipped)}
     >
-      <div
-        className={`card-inner relative w-full h-full transition-transform duration-600 preserve-3d ${
-          isFlipped ? "rotate-y-180" : ""
-        }`}
-      >
-        {/* Front of Card */}
-        <div className="card-face absolute w-full h-full backface-hidden bg-card border border-border rounded-xl p-6 flex flex-col justify-between hover:border-primary transition-colors glow-cyan">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-primary font-mono text-lg font-semibold">{name}</h3>
-                <p className="text-muted-foreground text-xs font-mono">{subtitle}</p>
-              </div>
-              <div className="flex gap-2">
-                <a
-                  href={github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-muted-foreground hover:text-primary transition-colors interactive-element"
-                >
-                  <Github className="w-5 h-5" strokeWidth={1.5} />
-                </a>
-                <button
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-muted-foreground hover:text-primary transition-colors interactive-element"
-                >
-                  <ExternalLink className="w-5 h-5" strokeWidth={1.5} />
-                </button>
-              </div>
-            </div>
+      <div className="flashcard-inner">
+        {/* Front Side */}
+        <div className="flashcard-front flex flex-col">
+          {/* Project Image */}
+          <div className="relative w-full h-[250px] overflow-hidden">
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/80 to-transparent" />
+          </div>
 
-            <div className="flex flex-wrap gap-2 mb-4">
-              {tech.map((t) => (
+          {/* Content */}
+          <div className="flex-1 flex flex-col p-6">
+            <h3 className="text-2xl font-bold text-foreground mb-3">{title}</h3>
+
+            {/* Tech Stack Tags */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {tags.map((tag, index) => (
                 <span
-                  key={t}
-                  className="px-2 py-1 bg-accent text-xs font-mono rounded text-muted-foreground border border-border"
+                  key={index}
+                  className="px-3 py-1.5 text-xs font-medium rounded-full border"
+                  style={{
+                    background: "hsla(var(--cyan-accent), 0.15)",
+                    borderColor: "hsla(var(--cyan-accent), 0.3)",
+                    color: "hsl(var(--cyan-accent))",
+                  }}
                 >
-                  {t}
+                  {tag}
                 </span>
               ))}
             </div>
-          </div>
 
-          <div className="mt-auto">
-            <p className="text-sm text-center text-muted-foreground font-mono">
-              Click to learn more →
+            {/* Links */}
+            <div className="flex gap-4 mt-auto">
+              {githubUrl && (
+                <a
+                  href={githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-2 text-blue-accent hover:scale-105 transition-transform"
+                >
+                  <Github className="w-4 h-4" />
+                  <span className="text-sm">GitHub</span>
+                </a>
+              )}
+              {liveUrl && (
+                <a
+                  href={liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-2 text-blue-accent hover:scale-105 transition-transform"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span className="text-sm">Live Demo</span>
+                </a>
+              )}
+            </div>
+
+            {/* Flip Indicator */}
+            <p className="text-sm text-muted-foreground mt-4 text-center">
+              Click to see details →
             </p>
           </div>
         </div>
 
-        {/* Back of Card */}
-        <div className="card-face absolute w-full h-full backface-hidden bg-card border border-primary rounded-xl p-6 rotate-y-180 overflow-y-auto glow-purple">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-primary font-mono text-sm mb-2">✨ Project Details</h3>
-              <div className="border-t border-border mb-4" />
-            </div>
+        {/* Back Side */}
+        <div className="flashcard-back flex flex-col p-6 overflow-y-auto">
+          <h3 className="text-2xl font-bold text-foreground mb-2">{title}</h3>
+          <div
+            className="h-1 w-20 rounded mb-6"
+            style={{
+              background: "linear-gradient(90deg, hsl(var(--cyan-accent)), hsl(var(--purple-accent)))",
+            }}
+          />
 
-            <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+          <p className="text-gray-text leading-relaxed mb-6 text-sm">
+            {description}
+          </p>
 
-            {features && features.length > 0 && (
-              <div>
-                <h4 className="text-code-orange font-mono text-sm mb-2">🎯 Key Features:</h4>
-                <ul className="space-y-1">
-                  {features.map((feature, idx) => (
-                    <li key={idx} className="text-sm text-muted-foreground ml-4">
-                      • {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {impact && impact.length > 0 && (
-              <div>
-                <h4 className="text-code-green font-mono text-sm mb-2">📊 Impact:</h4>
-                <ul className="space-y-1">
-                  {impact.map((item, idx) => (
-                    <li key={idx} className="text-sm text-muted-foreground ml-4">
-                      • {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className="mt-6 pt-4 border-t border-border">
-              <p className="text-xs text-center text-muted-foreground font-mono">← Click to go back</p>
-            </div>
+          {/* Key Features */}
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold text-foreground mb-3">
+              ✨ Key Features:
+            </h4>
+            <ul className="space-y-2">
+              {features.map((feature, index) => (
+                <li
+                  key={index}
+                  className="flex items-start gap-2 text-sm text-green-accent"
+                >
+                  <span>›</span>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
           </div>
+
+          {/* Impact */}
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold text-foreground mb-3">
+              📊 Impact:
+            </h4>
+            <ul className="space-y-2">
+              {impact.map((item, index) => (
+                <li
+                  key={index}
+                  className="flex items-start gap-2 text-sm text-orange-accent font-semibold"
+                >
+                  <span>•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Back Button */}
+          <p className="text-sm text-muted-foreground mt-auto text-center hover:text-cyan-accent transition-colors">
+            ← Back to overview
+          </p>
         </div>
       </div>
     </div>
