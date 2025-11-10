@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ExternalLink, Github, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import ProjectCard from "@/components/ProjectCard";
 
 const Projects = () => {
   const [filters, setFilters] = useState({
@@ -21,6 +21,12 @@ const Projects = () => {
       description: "Python-based code verification automation tool with real-time GUI and violation tracking. Reduced manual review time by 70%.",
       tech: ["Python"],
       github: "https://github.com/Hallous-Yassine",
+      features: [
+        "Real-time GUI for violation tracking",
+        "Automated testing pipeline",
+        "Custom rule configuration"
+      ],
+      impact: ["70% reduction in manual code review time", "Improved code quality across teams"]
     },
     {
       id: 2,
@@ -29,6 +35,12 @@ const Projects = () => {
       description: "1st Place IAS TAM Challenge. AI-powered proactive application security platform providing protection before and after deployment.",
       tech: ["AI/ML", "Python"],
       github: "https://github.com/Hallous-Yassine",
+      features: [
+        "Proactive threat detection",
+        "Real-time vulnerability scanning",
+        "AI-powered security recommendations"
+      ],
+      impact: ["Won 1st place at IAS TAM Challenge", "Protection before and after deployment"]
     },
     {
       id: 3,
@@ -37,6 +49,12 @@ const Projects = () => {
       description: "Handwritten digit recognition with 99.5% accuracy. Interactive web application built with TensorFlow and React.",
       tech: ["Python", "React", "AI/ML"],
       github: "https://github.com/Hallous-Yassine",
+      features: [
+        "99.5% accuracy rate",
+        "Interactive web interface",
+        "Real-time digit recognition"
+      ],
+      impact: ["High accuracy model", "User-friendly interface"]
     },
     {
       id: 4,
@@ -45,6 +63,12 @@ const Projects = () => {
       description: "Industrial process automation platform with real-time IoT sensor data processing using Node.js and PostgreSQL.",
       tech: ["Node.js", "IoT"],
       github: "https://github.com/Hallous-Yassine",
+      features: [
+        "Real-time IoT sensor data processing",
+        "Process automation workflows",
+        "PostgreSQL database integration"
+      ],
+      impact: ["Improved industrial efficiency", "Real-time monitoring and control"]
     },
     {
       id: 5,
@@ -53,6 +77,12 @@ const Projects = () => {
       description: "Flutter application integrated with ESP32 for real-time DHT11 sensor monitoring. Built during SofiaTech internship.",
       tech: ["Flutter", "IoT"],
       github: "https://github.com/Hallous-Yassine",
+      features: [
+        "ESP32 integration",
+        "Real-time DHT11 sensor monitoring",
+        "MQTT protocol communication"
+      ],
+      impact: ["Built during SofiaTech internship", "Responsive mobile interface"]
     },
     {
       id: 6,
@@ -61,6 +91,12 @@ const Projects = () => {
       description: "Full-stack quiz game platform with user management, leaderboards, and custom quiz creation capabilities.",
       tech: ["Node.js"],
       github: "https://github.com/Hallous-Yassine",
+      features: [
+        "User management system",
+        "Dynamic leaderboards",
+        "Custom quiz creation"
+      ],
+      impact: ["Full-stack implementation", "Engaging quiz experience"]
     },
   ];
 
@@ -111,69 +147,18 @@ const Projects = () => {
 
         {/* Content */}
         <div className="p-8">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {filteredProjects.map((project) => (
-              <div
+              <ProjectCard
                 key={project.id}
-                className="bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors group"
-              >
-                {/* Project Header */}
-                <div className="p-4 border-b border-border flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-primary font-mono text-sm mb-1">
-                      Project {project.id} <span className="text-muted-foreground">{project.subtitle}</span>
-                    </h3>
-                  </div>
-                  <div className="flex gap-2">
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      <Github className="w-4 h-4" />
-                    </a>
-                    <button className="text-muted-foreground hover:text-primary transition-colors">
-                      <ExternalLink className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Project Image Placeholder */}
-                <div className="aspect-video bg-accent relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-4xl font-bold text-primary/20">{project.name}</span>
-                  </div>
-                </div>
-
-                {/* Project Content */}
-                <div className="p-4">
-                  <p className="text-sm text-muted-foreground mb-4">{project.description}</p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tech.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-2 py-1 bg-accent text-xs font-mono rounded text-muted-foreground"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full font-mono"
-                    asChild
-                  >
-                    <a href={project.github} target="_blank" rel="noopener noreferrer">
-                      view-project
-                    </a>
-                  </Button>
-                </div>
-              </div>
+                name={project.name}
+                subtitle={project.subtitle}
+                description={project.description}
+                tech={project.tech}
+                github={project.github}
+                features={project.features}
+                impact={project.impact}
+              />
             ))}
           </div>
         </div>

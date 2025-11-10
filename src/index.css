@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './components/ui/card-3d.css';
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
@@ -63,10 +65,44 @@ All colors MUST be HSL.
   
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+    font-feature-settings: 'liga' 1, 'calt' 1;
   }
   
   code, pre, .font-mono {
-    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+    font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+  }
+  
+  /* Glow Effects */
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(78, 205, 196, 0.4), 0 0 40px rgba(78, 205, 196, 0.2);
+  }
+  
+  .glow-orange {
+    box-shadow: 0 0 20px rgba(232, 168, 124, 0.4), 0 0 40px rgba(232, 168, 124, 0.2);
+  }
+  
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(195, 119, 224, 0.4), 0 0 40px rgba(195, 119, 224, 0.2);
+  }
+  
+  /* Hover Transitions */
+  .interactive-element {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .interactive-element:hover {
+    transform: translateY(-4px);
+    filter: brightness(1.2);
+  }
+  
+  /* Background Effects */
+  .bg-glow-cyan {
+    background: radial-gradient(circle at center, rgba(78, 205, 196, 0.15) 0%, transparent 70%);
+  }
+  
+  .bg-glow-orange {
+    background: radial-gradient(circle at center, rgba(232, 168, 124, 0.15) 0%, transparent 70%);
   }
 }

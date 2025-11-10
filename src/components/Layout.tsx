@@ -8,6 +8,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     { path: "/", label: "_hello" },
     { path: "/about", label: "_about-me" },
     { path: "/projects", label: "_projects" },
+    { path: "/gallery", label: "_gallery" },
     { path: "/contact", label: "_contact-me" },
   ];
   
