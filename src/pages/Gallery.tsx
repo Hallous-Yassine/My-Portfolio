@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageCircle, Share2, X, ChevronRight } from 'lucide-react';
+import { Heart, MessageCircle, Share2, X, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface GalleryPost {
-  id: string;
+  id: number | string;
   image: string;
   title: string;
   caption: string;
@@ -15,6 +15,7 @@ interface GalleryPost {
   comments: number;
   shares: number;
   hashtags: string[];
+  albumImages?: string[];
 }
 
 interface GalleryData {
@@ -30,7 +31,8 @@ const Gallery: React.FC = () => {
   const [galleryData, setGalleryData] = useState<GalleryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<GalleryPost | null>(null);
-  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [likedPosts, setLikedPosts] = useState<Set<number | string>>(new Set());
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [openSections, setOpenSections] = useState({
     timeline: true,
@@ -50,13 +52,30 @@ const Gallery: React.FC = () => {
       });
   }, []);
 
+  // Handle keyboard navigation for image carousel
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (!selectedPost) return;
+      if (e.key === 'ArrowLeft') {
+        handlePrevImage();
+      } else if (e.key === 'ArrowRight') {
+        handleNextImage();
+      } else if (e.key === 'Escape') {
+        setSelectedPost(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [selectedPost, currentImageIndex]);
+
   const posts = galleryData?.posts || [];
 
   const filteredPosts = selectedYear
     ? posts.filter(post => post.year === selectedYear)
     : posts;
 
-  const handleLike = (postId: string) => {
+  const handleLike = (postId: number | string) => {
     setLikedPosts(prev => {
       const newSet = new Set(prev);
       if (newSet.has(postId)) {
@@ -79,6 +98,32 @@ const Gallery: React.FC = () => {
       ...prev,
       [section]: !prev[section]
     }));
+  };
+
+  const handlePostSelect = (post: GalleryPost) => {
+    setSelectedPost(post);
+    setCurrentImageIndex(0);
+  };
+
+  const handlePrevImage = () => {
+    if (!selectedPost || !selectedPost.albumImages) return;
+    setCurrentImageIndex((prev) => 
+      prev === 0 ? selectedPost.albumImages!.length - 1 : prev - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    if (!selectedPost || !selectedPost.albumImages) return;
+    setCurrentImageIndex((prev) => 
+      prev === selectedPost.albumImages!.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const getCurrentImage = () => {
+    if (!selectedPost || !selectedPost.albumImages) {
+      return selectedPost?.image || '';
+    }
+    return selectedPost.albumImages[currentImageIndex];
   };
 
   if (loading) {
@@ -121,6 +166,15 @@ const Gallery: React.FC = () => {
             </button>
             {openSections.timeline && (
               <div className="ml-6 mt-2 space-y-2 text-sm font-mono">
+                <button
+                  className={`flex items-center gap-2 w-full text-left hover:text-primary transition-colors ${
+                    selectedYear === null ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                  onClick={() => setSelectedYear(null)}
+                >
+                  <ChevronRight className="w-3 h-3" />
+                  all
+                </button>
                 {Array.from(new Set(posts.map(post => post.year))).sort((a, b) => b - a).map(year => (
                   <button
                     key={year}
@@ -199,14 +253,14 @@ const Gallery: React.FC = () => {
                 <div
                   key={post.id}
                   className="bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-all duration-300 cursor-pointer interactive-element glow-cyan"
-                  onClick={() => setSelectedPost(post)}
+                  onClick={() => handlePostSelect(post)}
                 >
                   {/* Image */}
-                  <div className="aspect-square bg-accent relative overflow-hidden">
+                  <div className="h-64 bg-accent relative overflow-hidden flex items-center justify-center">
                     <img
                       src={post.image}
                       alt={post.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
                   </div>
@@ -260,12 +314,43 @@ const Gallery: React.FC = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Image Side */}
-            <div className="bg-accent flex items-center justify-center p-8">
+            <div className="bg-accent flex items-center justify-center p-8 relative">
               <img
-                src={selectedPost.image}
+                src={getCurrentImage()}
                 alt={selectedPost.title}
                 className="max-w-full max-h-full object-contain rounded-lg"
               />
+
+              {/* Navigation Controls - Fixed positioning */}
+              {selectedPost.albumImages && selectedPost.albumImages.length > 1 && (
+                <>
+                  {/* Previous Button */}
+                  <button
+                    onClick={handlePrevImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/70 hover:bg-background transition-colors p-3 rounded-full z-20 flex items-center justify-center w-12 h-12"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={handleNextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/70 hover:bg-background transition-colors p-3 rounded-full z-20 flex items-center justify-center w-12 h-12"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+
+                  {/* Image Counter */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/70 px-4 py-2 rounded-full text-sm font-mono z-20">
+                    {currentImageIndex + 1} / {selectedPost.albumImages.length}
+                  </div>
+
+                  {/* Keyboard Hint */}
+                  <div className="absolute top-4 left-4 bg-background/70 px-3 py-1 rounded text-xs font-mono text-muted-foreground z-20">
+                    ← → to swap
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Content Side */}

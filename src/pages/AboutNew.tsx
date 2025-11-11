@@ -1,6 +1,5 @@
 import { ChevronDown, ChevronRight, Mail, Phone, Linkedin, Github } from "lucide-react";
 import { useState, useEffect } from "react";
-import { aboutContent } from "./AboutContent";
 
 type ContentSection = "bio" | "skills" | "education" | "experience" | "certifications" | "leadership";
 
@@ -19,6 +18,12 @@ interface AboutData {
       label: string;
     };
   };
+  bio: string;
+  skills: string;
+  education: string;
+  experience: string;
+  certifications: string;
+  leadership: string;
 }
 
 const AboutNew = () => {
@@ -55,7 +60,8 @@ const AboutNew = () => {
   };
 
   const getContent = () => {
-    return aboutContent[activeContent];
+    if (!aboutData) return "";
+    return aboutData[activeContent] || "";
   };
 
   if (loading) {

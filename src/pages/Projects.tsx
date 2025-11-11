@@ -6,29 +6,25 @@ import ProjectCard from "@/components/ProjectCard";
 interface Project {
   id: number;
   title: string;
-  description: string;
-  features: string[];
-  impact: string[];
+  subtitle: string;
+  overview: string;
+  challenge: string;
+  solution: string;
+  results: string;
   tags: string[];
   githubUrl: string;
   liveUrl: string;
   image: string;
   techStack: string[];
+  year: string;
 }
 
 const Projects = () => {
-  const [filters, setFilters] = useState({
-    React: true,
-    Python: true,
-    "Node.js": false,
-    Flutter: false,
-    "AI/ML": false,
-    IoT: false,
-  });
-
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTechs, setSelectedTechs] = useState<Set<string>>(new Set());
+  const [availableTechs, setAvailableTechs] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -39,6 +35,13 @@ const Projects = () => {
         }
         const data = await response.json();
         setProjects(data);
+
+        // Extract all unique tech stack items for filters
+        const techs = new Set<string>();
+        data.forEach((project: Project) => {
+          project.techStack.forEach((tech) => techs.add(tech));
+        });
+        setAvailableTechs(Array.from(techs).sort());
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -49,17 +52,21 @@ const Projects = () => {
     fetchProjects();
   }, []);
 
-  const toggleFilter = (tech: keyof typeof filters) => {
-    setFilters((prev) => ({ ...prev, [tech]: !prev[tech] }));
+  const toggleFilter = (tech: string) => {
+    setSelectedTechs((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(tech)) {
+        newSet.delete(tech);
+      } else {
+        newSet.add(tech);
+      }
+      return newSet;
+    });
   };
 
   const filteredProjects = projects.filter((project) => {
-    const activeTechs = Object.entries(filters)
-      .filter(([_, active]) => active)
-      .map(([tech]) => tech);
-    
-    if (activeTechs.length === 0) return true;
-    return project.techStack.some((t) => activeTechs.includes(t));
+    if (selectedTechs.size === 0) return true;
+    return project.techStack.some((t) => selectedTechs.has(t));
   });
 
   return (
@@ -71,12 +78,20 @@ const Projects = () => {
           <span className="text-sm font-mono text-foreground">Filter Projects</span>
         </div>
         
+        {/* All Button */}
+        <button
+          onClick={() => setSelectedTechs(new Set())}
+          className="w-full text-left px-2 py-2 mb-3 rounded text-sm font-mono text-primary hover:bg-accent transition-colors"
+        >
+          show all
+        </button>
+        
         <div className="space-y-3">
-          {Object.entries(filters).map(([tech, checked]) => (
+          {availableTechs.map((tech) => (
             <label key={tech} className="flex items-center gap-2 cursor-pointer group">
               <Checkbox
-                checked={checked}
-                onCheckedChange={() => toggleFilter(tech as keyof typeof filters)}
+                checked={selectedTechs.has(tech)}
+                onCheckedChange={() => toggleFilter(tech)}
               />
               <span className="text-sm font-mono text-muted-foreground group-hover:text-foreground transition-colors">
                 {tech}
@@ -121,13 +136,14 @@ const Projects = () => {
                 <ProjectCard
                   key={project.id}
                   title={project.title}
-                  description={project.description}
-                  features={project.features}
-                  impact={project.impact}
+                  description={project.overview}
+                  features={[project.challenge, project.solution]}
+                  impact={project.results.split(' • ').map(r => r.trim())}
                   tags={project.tags}
                   githubUrl={project.githubUrl}
                   liveUrl={project.liveUrl}
                   image={project.image}
+                  techStack={project.techStack}
                 />
               ))}
             </div>

@@ -7,6 +7,7 @@ interface ProjectCardProps {
   features: string[];
   impact: string[];
   tags: string[];
+  techStack?: string[];
   githubUrl?: string;
   liveUrl?: string;
   image: string;
@@ -18,11 +19,46 @@ const ProjectCard = ({
   features,
   impact,
   tags,
+  techStack,
   githubUrl,
   liveUrl,
   image,
 }: ProjectCardProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
+
+  // Color mapping for tech tags
+  const getTechColor = (tech: string) => {
+    const colors: Record<string, { bg: string; border: string; text: string }> = {
+      // Languages
+      Python: { bg: "hsla(50, 100%, 70%, 0.15)", border: "hsla(50, 100%, 70%, 0.3)", text: "hsl(50, 100%, 70%)" },
+      JavaScript: { bg: "hsla(45, 100%, 65%, 0.15)", border: "hsla(45, 100%, 65%, 0.3)", text: "hsl(45, 100%, 65%)" },
+      TypeScript: { bg: "hsla(225, 100%, 65%, 0.15)", border: "hsla(225, 100%, 65%, 0.3)", text: "hsl(225, 100%, 65%)" },
+      Java: { bg: "hsla(15, 100%, 60%, 0.15)", border: "hsla(15, 100%, 60%, 0.3)", text: "hsl(15, 100%, 60%)" },
+      Kotlin: { bg: "hsla(270, 100%, 65%, 0.15)", border: "hsla(270, 100%, 65%, 0.3)", text: "hsl(270, 100%, 65%)" },
+      C: { bg: "hsla(0, 0%, 70%, 0.15)", border: "hsla(0, 0%, 70%, 0.3)", text: "hsl(0, 0%, 70%)" },
+      "C#": { bg: "hsla(270, 90%, 60%, 0.15)", border: "hsla(270, 90%, 60%, 0.3)", text: "hsl(270, 90%, 60%)" },
+      Dart: { bg: "hsla(190, 100%, 50%, 0.15)", border: "hsla(190, 100%, 50%, 0.3)", text: "hsl(190, 100%, 50%)" },
+      // Frameworks & Libraries
+      React: { bg: "hsla(190, 100%, 60%, 0.15)", border: "hsla(190, 100%, 60%, 0.3)", text: "hsl(190, 100%, 60%)" },
+      "Node.js": { bg: "hsla(120, 90%, 50%, 0.15)", border: "hsla(120, 90%, 50%, 0.3)", text: "hsl(120, 90%, 50%)" },
+      Flask: { bg: "hsla(0, 100%, 70%, 0.15)", border: "hsla(0, 100%, 70%, 0.3)", text: "hsl(0, 100%, 70%)" },
+      Flutter: { bg: "hsla(190, 100%, 50%, 0.15)", border: "hsla(190, 100%, 50%, 0.3)", text: "hsl(190, 100%, 50%)" },
+      TensorFlow: { bg: "hsla(35, 100%, 60%, 0.15)", border: "hsla(35, 100%, 60%, 0.3)", text: "hsl(35, 100%, 60%)" },
+      Keras: { bg: "hsla(35, 100%, 60%, 0.15)", border: "hsla(35, 100%, 60%, 0.3)", text: "hsl(35, 100%, 60%)" },
+      "Scikit-learn": { bg: "hsla(200, 100%, 60%, 0.15)", border: "hsla(200, 100%, 60%, 0.3)", text: "hsl(200, 100%, 60%)" },
+      Docker: { bg: "hsla(190, 100%, 50%, 0.15)", border: "hsla(190, 100%, 50%, 0.3)", text: "hsl(190, 100%, 50%)" },
+      // Databases & Tools
+      PostgreSQL: { bg: "hsla(225, 90%, 60%, 0.15)", border: "hsla(225, 90%, 60%, 0.3)", text: "hsl(225, 90%, 60%)" },
+      SQLite: { bg: "hsla(200, 80%, 60%, 0.15)", border: "hsla(200, 80%, 60%, 0.3)", text: "hsl(200, 80%, 60%)" },
+      MySQL: { bg: "hsla(180, 100%, 40%, 0.15)", border: "hsla(180, 100%, 40%, 0.3)", text: "hsl(180, 100%, 40%)" },
+      MongoDB: { bg: "hsla(120, 100%, 50%, 0.15)", border: "hsla(120, 100%, 50%, 0.3)", text: "hsl(120, 100%, 50%)" },
+      // Hardware & IoT
+      ESP32: { bg: "hsla(25, 100%, 60%, 0.15)", border: "hsla(25, 100%, 60%, 0.3)", text: "hsl(25, 100%, 60%)" },
+      Arduino: { bg: "hsla(200, 100%, 50%, 0.15)", border: "hsla(200, 100%, 50%, 0.3)", text: "hsl(200, 100%, 50%)" },
+    };
+
+    return colors[tech] || { bg: "hsla(177, 58%, 60%, 0.15)", border: "hsla(177, 58%, 60%, 0.3)", text: "hsl(177, 58%, 60%)" };
+  };
 
   return (
     <div
@@ -46,22 +82,44 @@ const ProjectCard = ({
           <div className="flex-1 flex flex-col p-6">
             <h3 className="text-2xl font-bold text-foreground mb-3">{title}</h3>
 
-            {/* Tech Stack Tags */}
-            <div className="flex flex-wrap gap-2 mb-6">
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 mb-4">
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1.5 text-xs font-medium rounded-full border"
+                  className="px-2 py-1 text-xs font-medium rounded border"
                   style={{
-                    background: "hsla(var(--cyan-accent), 0.15)",
-                    borderColor: "hsla(var(--cyan-accent), 0.3)",
-                    color: "hsl(var(--cyan-accent))",
+                    background: "hsla(177, 58%, 60%, 0.15)",
+                    borderColor: "hsla(177, 58%, 60%, 0.3)",
+                    color: "hsl(177, 58%, 60%)",
                   }}
                 >
                   {tag}
                 </span>
               ))}
             </div>
+
+            {/* Tech Stack */}
+            {techStack && techStack.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {techStack.map((tech, index) => {
+                  const colors = getTechColor(tech);
+                  return (
+                    <span
+                      key={index}
+                      className="px-2 py-1 text-xs font-medium rounded-full border"
+                      style={{
+                        background: colors.bg,
+                        borderColor: colors.border,
+                        color: colors.text,
+                      }}
+                    >
+                      {tech}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Links */}
             <div className="flex gap-4 mt-auto">
