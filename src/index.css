@@ -147,4 +147,85 @@ All colors MUST be HSL.
     box-shadow: 0 0 20px rgba(78, 205, 196, 0.3), 0 0 40px rgba(78, 205, 196, 0.1);
     border-color: hsla(var(--cyan-accent), 0.5);
   }
+
+  /* Skill Badge Colors - VSCode Theme */
+  .skill-badge-purple {
+    background: rgba(199, 146, 234, 0.15);
+    border: 1px solid rgba(199, 146, 234, 0.4);
+    color: #C792EA;
+  }
+  .skill-badge-purple:hover {
+    background: rgba(199, 146, 234, 0.25);
+    box-shadow: 0 0 15px rgba(199, 146, 234, 0.3);
+  }
+
+  .skill-badge-orange {
+    background: rgba(247, 140, 108, 0.15);
+    border: 1px solid rgba(247, 140, 108, 0.4);
+    color: #F78C6C;
+  }
+  .skill-badge-orange:hover {
+    background: rgba(247, 140, 108, 0.25);
+    box-shadow: 0 0 15px rgba(247, 140, 108, 0.3);
+  }
+
+  .skill-badge-cyan {
+    background: rgba(78, 205, 196, 0.15);
+    border: 1px solid rgba(78, 205, 196, 0.4);
+    color: #4ECDC4;
+  }
+  .skill-badge-cyan:hover {
+    background: rgba(78, 205, 196, 0.25);
+    box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
+  }
+
+  .skill-badge-blue {
+    background: rgba(130, 170, 255, 0.15);
+    border: 1px solid rgba(130, 170, 255, 0.4);
+    color: #82AAFF;
+  }
+  .skill-badge-blue:hover {
+    background: rgba(130, 170, 255, 0.25);
+    box-shadow: 0 0 15px rgba(130, 170, 255, 0.3);
+  }
+
+  .skill-badge-green {
+    background: rgba(195, 232, 141, 0.15);
+    border: 1px solid rgba(195, 232, 141, 0.4);
+    color: #C3E88D;
+  }
+  .skill-badge-green:hover {
+    background: rgba(195, 232, 141, 0.25);
+    box-shadow: 0 0 15px rgba(195, 232, 141, 0.3);
+  }
+
+  .skill-badge-teal {
+    background: rgba(137, 221, 255, 0.15);
+    border: 1px solid rgba(137, 221, 255, 0.4);
+    color: #89DDFF;
+  }
+  .skill-badge-teal:hover {
+    background: rgba(137, 221, 255, 0.25);
+    box-shadow: 0 0 15px rgba(137, 221, 255, 0.3);
+  }
+
+  /* Skill Category Border Colors */
+  .skill-category-purple {
+    border-left-color: #C792EA !important;
+  }
+  .skill-category-orange {
+    border-left-color: #F78C6C !important;
+  }
+  .skill-category-cyan {
+    border-left-color: #4ECDC4 !important;
+  }
+  .skill-category-blue {
+    border-left-color: #82AAFF !important;
+  }
+  .skill-category-green {
+    border-left-color: #C3E88D !important;
+  }
+  .skill-category-teal {
+    border-left-color: #89DDFF !important;
+  }
 }
